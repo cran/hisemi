@@ -1,7 +1,7 @@
 ########## EM algorithm followed by Newton-type optimization
 penLik.EMNewton=function(tstat,x,df,spar=10^seq(-1,8,length=30), nknots=100, starts,
      tuning.method=c('NIC','CV') ,#'GCV','BIC','CAIC','HQIC'),
-     cv.fold=5, 
+     cv.fold=5, pen.order=1,poly.degree=pen.order*2-1,
      optim.method=c('nlminb',"BFGS","CG","L-BFGS-B","Nelder-Mead", "SANN", 'NR'),
      logistic.correction=TRUE,
      em.iter.max=10, 
@@ -11,7 +11,10 @@ penLik.EMNewton=function(tstat,x,df,spar=10^seq(-1,8,length=30), nknots=100, sta
      debugging=FALSE, plotit=TRUE,...)
 {
     if(debugging)options(error=quote(dump.frames("testdump", TRUE)))  ## this will save the objects when error occurs
-
+    pen.order=round(pen.order)
+    poly.degree=round(poly.degree)
+    cv.fold=round(cv.fold)
+    
 ##### initializing central t and non-central t
     dt0.all=dt(tstat,df)
 ###### saturated fit           
@@ -50,22 +53,28 @@ penLik.EMNewton=function(tstat,x,df,spar=10^seq(-1,8,length=30), nknots=100, sta
     if(!inherits(x,'matrix')) x=as.matrix(x)
     n.vars=ncol(x);
     
-    require(splines)
-    library(Matrix)
-    require(fda)
+#    require(splines)
+#    library(Matrix)
+#    require(fda)
 
     H.all=Matrix(matrix(1,G.all,1),sparse=TRUE);   ########### intercept term is not penalized 
     j.all=0
     Pen.mat=matrix(0,1,1)       ########### intercept term is not penalized
     for(i in 1:n.vars){
         knots.all=unique(quantile(x[,i], 1:nknots/(nknots+1)))
-        H.i=bs(x[,i],knots=knots.all, degree=2, intercept=FALSE)  ########### intercept term is not penalized
-                   ## degree=2 corresponds to 1st order differencing; spar->infinity ==> constant pi0
+        H.i=bs(x[,i],knots=knots.all, degree=poly.degree, intercept=FALSE)  ########### intercept term is not penalized
         H.all=cBind(H.all,H.i[,])
         j.all=c(j.all, rep(i, ncol(H.i)))
 ######## derivative penalties 
-        Hobj.i=create.bspline.basis(breaks=c(min(x[,i]),knots.all,max(x[,i])),norder=3)  ## norder=3 means quadratic
-        Pen.i=bsplinepen(Hobj.i, Lfdobj=1)[-1,-1] ########### intercept term is not penalized
+        if(pen.order*2-1==poly.degree){
+          Pen.i=OsplinePen(range(x[,i]), knots.all, pen.order)[-1,-1]
+        }else if (pen.order != poly.degree) {
+          Hobj.i=create.bspline.basis(breaks=c(min(x[,i]),knots.all,max(x[,i])),norder=poly.degree+1)  ## norder=3 means quadratic
+          Pen.i=bsplinepen(Hobj.i, Lfdobj=pen.order)[-1,-1] ########### intercept term is not penalized
+        }else {
+          Hobj.i=create.bspline.basis(breaks=c(min(x[,i]),knots.all,max(x[,i])),norder=poly.degree+1)  ## norder=3 means quadratic
+          Pen.i=bsplinepen.fda(Hobj.i, Lfdobj=pen.order)[-1,-1] ########### intercept term is not penalized
+        }
         
         Pen.mat=directSum(Pen.mat,Pen.i)
     }
@@ -189,7 +198,7 @@ penLik.EMNewton=function(tstat,x,df,spar=10^seq(-1,8,length=30), nknots=100, sta
         )
     }
 
-    require(MASS)
+    #require(MASS)
 
 
 ############ setting staring values
@@ -304,7 +313,7 @@ penLik.EMNewton=function(tstat,x,df,spar=10^seq(-1,8,length=30), nknots=100, sta
 
     ########## logistic correction to the enp
     if(logistic.correction){
-        enp.logistic=try(logistic.enp(log10(spar),enps[cv.i,],ncol(H.all)+1), silent=TRUE)
+        enp.logistic=try(logistic.enp(log10(spar), enps[cv.i,], ncol(H.all)+1, 2+n.vars*(pen.order-1)), silent=TRUE)
         if(class(enp.logistic)=='try-error') enp.logistic=enps[cv.i,]
         enps[cv.i,]=enp.logistic
     }
