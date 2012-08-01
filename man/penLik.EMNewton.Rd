@@ -1,22 +1,20 @@
 \name{penLik.EMNewton}
 \alias{penLik.EMNewton}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Fits hierarchical semiparametric regression model to t-statistics }
 \description{
   Fits hierarchical semiparametric regression model to t-statistics
 }
 \usage{
 penLik.EMNewton(tstat, x, df, spar = c(10^seq(-1,8,length=30), Inf),
-        nknots = n.knots(length(tstat)), starts, tuning.method = c("NIC", "CV"), 
-        cv.fold = 5, pen.order=1,poly.degree=pen.order*2-1,
-        optim.method = c("nlminb", "BFGS", "CG", 
-        "L-BFGS-B", "Nelder-Mead", "SANN", "NR"), 
+        nknots = n.knots(length(tstat)), starts, 
+	tuning.method = c("NIC", "CV"), cv.fold = 5, pen.order=1,
+	poly.degree=pen.order*2-1, optim.method =
+	c("nlminb", "BFGS", "CG", "L-BFGS-B", "Nelder-Mead", "SANN", "NR"), 
         logistic.correction = TRUE, em.iter.max = 10, 
         em.beta.iter.max = 1, newton.iter.max = 1500, 
         scale.conv = 0.001, lfdr.conv = 0.001, NPLL.conv = 0.001, 
         debugging = FALSE, plotit = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{tstat}{ A numeric vector t-statistics }
   \item{x}{ A numeric matrix of covariates, with \code{nrow(x)} being \code{length(tstat)}}
@@ -48,39 +46,42 @@ penLik.EMNewton(tstat, x, df, spar = c(10^seq(-1,8,length=30), Inf),
 \item{lfdr:}{ A numeric vector of local false discovery rates.}
 \item{model}{A  list of \code{tstat}, \code{df} and \code{x}, which are the same as arguments}
 \item{scale.fact:}{ A list with \itemize{
-        \item{scale.fact:}{ Scale factor}
-        \item{sd.ncp:}{ Equivalent standard deviation of noncentrality parameters}
-        \item{r:}{ A reparameterization of \code{scale.fact}}
-        \item{t.cross:}{ \code{sqrt(df*(final.scale^(2/(df+1))-1)/(1-final.scale^(-2*df/(df+1))))}}}}
+        \item{\code{scale.fact}:}{ Scale factor}
+        \item{\code{sd.ncp}:}{ Equivalent standard deviation of noncentrality parameters}
+        \item{\code{r}:}{ A reparameterization of \code{scale.fact}}
+        \item{\code{t.cross}:}{ \code{sqrt(df*(s^(2/(df+1))-1)/(1-s^(-2*df/(df+1))))}}} where \code{s} is the \code{scale.fact}}
 \item{pi0:}{ A numeric vector of mixing proportions for the central t component}
 \item{tuning:}{ A list with \itemize{
-        \item{mean:}{ Mean criterion}
-        \item{var:}{ Variance of criterion across observations}
-        \item{grp:}{ Cross-validation group membership}
-        \item{method:}{ The \code{tuning.method} used.}
-        \item{final:}{ The minimum mean criterion}}}
+        \item{\code{mean}:}{ Mean criterion}
+        \item{\code{var}:}{ Variance of criterion across observations}
+        \item{\code{grp}:}{ Cross-validation group membership}
+        \item{\code{method}:}{ The \code{tuning.method} used.}
+        \item{\code{final}:}{ The minimum mean criterion}}}
 \item{spar:}{ A list with \itemize{
-        \item{all:}{ All smoothing parameters searched}
-        \item{final:}{ The smoothing parameter used}
-        \item{final.idx:}{ The index of the final \code{spar}}}}
+        \item{\code{all}:}{ All smoothing parameters searched}
+        \item{\code{final}:}{ The smoothing parameter used}
+        \item{\code{final.idx}:}{ The index of the final \code{spar}}}}
 \item{enp:}{ A list with \itemize{
-        \item{raw:}{ Raw effective number of parameters}
-        \item{logistic:}{ Effective number of parameters after fitting logistic curve as a correction}
-        \item{final:}{ The effective nubmer of parameters in the final model}
-        \item{good.idx:}{ The index of the selected effective number of parameters}}}
+        \item{\code{raw}:}{ Raw effective number of parameters}
+        \item{\code{logistic}:}{ Effective number of parameters after fitting logistic curve as a correction}
+        \item{\code{final}:}{ The effective nubmer of parameters in the final model}
+        \item{\code{good.idx}:}{ The index of the selected effective number of parameters}}}
 \item{fit:}{ A list with \itemize{
-        \item{intercept:}{ The fitted intercept}
-        \item{covariate.idx:}{ The index of covariates}
-        \item{f.covariate:}{ Each additive smooth function evaluated at the covariates}
-        \item{f:}{ Fitted smoothing funciton}
-        \item{beta:}{ Estimated regression coefficients}
-        \item{H:}{ Expanded design matrix}
-        \item{asym.vcov:}{ Asymptotic variance-covariance matrix for estimated parameters}}}
+        \item{\code{intercept}:}{ The fitted intercept}
+        \item{\code{covariate.idx}:}{ The index of covariates}
+        \item{\code{f.covariate}:}{ Each additive smooth function evaluated at the covariates}
+        \item{\code{f}:}{ Fitted smoothing funciton}
+        \item{\code{beta}:}{ Estimated regression coefficients}
+        \item{\code{H}:}{ Expanded design matrix}
+        \item{\code{asym.vcov}:}{ Asymptotic variance-covariance matrix for estimated parameters}}}
 \item{NPLL:}{ A list with \itemize{
-        \item{NPLL:}{ Negative penalized log likelihood}
-        \item{logLik:}{ Log likelihood}
-        \item{penalty:}{ Penalty term}
-        \item{saturated.ll:}{ Saturated log likelihood}}}
+        \item{\code{NPLL}:}{ Negative penalized log likelihood}
+        \item{\code{logLik}:}{ Log likelihood}
+        \item{\code{penalty}:}{ Penalty term}
+        \item{\code{saturated.ll}:}{ Saturated log likelihood}}}
+}
+\note{
+When spar is too small, the results need to be treated cautiously. It is advisable to plot the results as a check. 
 }
 \references{ Long Qu, Dan Nettleton, Jack Dekkers (2012) A hierarchical semiparametric model for incorporating inter-gene relationship information for analysis of genomic data. Biometrics (to appear)}
 \author{ Long Qu \email{longorognol@hotmail.com} }
@@ -88,13 +89,13 @@ penLik.EMNewton(tstat, x, df, spar = c(10^seq(-1,8,length=30), Inf),
 %}
 \seealso{ \code{\link{plot.hisemit}}, \code{\link{fitted.hisemit}}, \code{\link{coef.hisemit}}, 
 \code{\link{vcov.hisemit}}, \code{\link{residuals.hisemit}}, \code{\link{logLik.hisemit}}, 
-\code{\link{confint.hisemit}}, \code{\link{plot.hisemit}} 
+\code{\link{confint.hisemit}}, \code{\link{plot.hisemit}}, 
 \code{\link{hisemi-package}}, \code{\link[pi0]{pi0-package}}
 }
 \examples{
-\dontrun{
-# See the example for the package.
-}
+%\dontrun{
+# See the examples for the hisemi-package.
+%}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

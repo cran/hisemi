@@ -12,8 +12,8 @@ The package includes functions for fitting hierarchical semiparametric regressio
 \tabular{ll}{
 Package: \tab hisemi\cr
 Type: \tab Package\cr
-Version: \tab 1.0-208\cr
-Date: \tab 2012-02-24\cr
+Version: \tab 1.0-249\cr
+Date: \tab 2012-08-01\cr
 License: \tab GPL version 2 or newer\cr
 LazyLoad: \tab yes\cr
 }
@@ -37,11 +37,11 @@ LazyLoad: \tab yes\cr
 }
 }
 \author{
-Long Qu \email{longorognol@hotmail.com}, Dan Nettleton \email{dnett@iastate.edu}, Jack C.M. Dekkers \email{jdekkers@iastate.edu}
+Long Qu \email{longorognol@hotmail.com}
 
 Maintainer: Long Qu \email{longorognol@hotmail.com}
 }
-\references{ Long Qu, Dan Nettleton, Jack Dekkers (2012. A hierarchical semiparametric model for incorporating inter-gene relationship information for analysis of genomic data. Biometrics (to appear)}
+\references{ Long Qu, Dan Nettleton, Jack Dekkers (2012). A hierarchical semiparametric model for incorporating inter-gene relationship information for analysis of genomic data. Biometrics (to appear)}
 \keyword{ package }
 \keyword{ models }
 \keyword{ regression }
@@ -51,7 +51,7 @@ Maintainer: Long Qu \email{longorognol@hotmail.com}
 }
 \examples{
 ## simulate some fake data
-G=20000
+G=100  ## for demonstration only. Normally, G should be much larger
 sdncp=1.3
 n1=n2=5
 df=n1+n2-2
@@ -66,7 +66,7 @@ t1.i=rt(G,df,ncp.i)
 t.i=ifelse(Z.i==0,t0.i,t1.i)
 
 ## fit model
-(plfit=penLik.EMNewton(t.i, x, df, plotit=FALSE))
+(plfit=penLik.EMNewton(t.i, x, df, spar=10^seq(0,8,length=30),plotit=FALSE))
 (plfit0=scaledTMix.null(t.i, df))
 
 \dontrun{
