@@ -3,7 +3,7 @@
 \alias{hisemi}
 \docType{package}
 \title{
-The package includes functions for fitting hierarchical semiparametric regression model to a large number of parametric test statistics. 
+Hierarchical semiparametric regression model to a large number of parametric test statistics 
 }
 \description{
 The package includes functions for fitting hierarchical semiparametric regression model to a large number of parametric test statistics
@@ -12,8 +12,8 @@ The package includes functions for fitting hierarchical semiparametric regressio
 \tabular{ll}{
 Package: \tab hisemi\cr
 Type: \tab Package\cr
-Version: \tab 1.0-319\cr
-Date: \tab 2013-08-30\cr
+Version: \tab 1.1-0\cr
+Date: \tab 2017-07-09\cr
 License: \tab GPL version 2 or newer\cr
 LazyLoad: \tab yes\cr
 }
@@ -37,9 +37,9 @@ LazyLoad: \tab yes\cr
 }
 }
 \author{
-Long Qu \email{long.qu@wright.edu}
+Long Qu \email{rtistician@gmail.com}
 
-Maintainer: Long Qu \email{long.qu@wright.edu}
+Maintainer: Long Qu \email{rtistician@gmail.com}
 }
 \references{ Long Qu, Dan Nettleton, Jack Dekkers (2012). A hierarchical semiparametric model for incorporating inter-gene relationship information for analysis of genomic data. Biometrics, 68(4):1168-1177}
 \keyword{ package }
@@ -62,7 +62,7 @@ Pi.i=1/(1+exp(f(x)))
 Z.i=rbinom(G,1,1-Pi.i)
 t0.i=rt(G,df)
 ncp.i=rnorm(G,0,sdncp)
-t1.i=rt(G,df,ncp.i)
+t1.i=rt(G,df, ncp.i)
 t.i=ifelse(Z.i==0,t0.i,t1.i)
 
 ## fit model
